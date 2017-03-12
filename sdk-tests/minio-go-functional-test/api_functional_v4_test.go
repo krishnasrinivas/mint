@@ -157,20 +157,22 @@ func TestMakeBucketRegions(t *testing.T) {
 		t.Fatal("Error:", err, bucketName)
 	}
 
-	// Make a new bucket with '.' in its name, in 'us-west-2'. This
-	// request is internally staged into a path style instead of
-	// virtual host style.
-	if err = c.MakeBucket(bucketName+".withperiod", "us-east-1"); err != nil {
-		t.Fatal("Error:", err, bucketName+".withperiod")
-	}
+	// AZURE-NA . not allowed in bucketname
+	// // Make a new bucket with '.' in its name, in 'us-west-2'. This
+	// // request is internally staged into a path style instead of
+	// // virtual host style.
+	// if err = c.MakeBucket(bucketName+".withperiod", "us-east-1"); err != nil {
+	// 	t.Fatal("Error:", err, bucketName+".withperiod")
+	// }
 
-	// Remove the newly created bucket.
-	if err = c.RemoveBucket(bucketName + ".withperiod"); err != nil {
-		t.Fatal("Error:", err, bucketName+".withperiod")
-	}
+	// // Remove the newly created bucket.
+	// if err = c.RemoveBucket(bucketName + ".withperiod"); err != nil {
+	// 	t.Fatal("Error:", err, bucketName+".withperiod")
+	// }
 }
 
-// Test PutObject using a large data to trigger multipart readat
+// AZURENA - metadata not supported in multipart.
+// // Test PutObject using a large data to trigger multipart readat
 func TestPutObjectReadAt(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping functional tests for short runs")
@@ -235,9 +237,6 @@ func TestPutObjectReadAt(t *testing.T) {
 		t.Fatalf("Error: number of bytes in stat does not match, want %v, got %v\n",
 			bufSize, st.Size)
 	}
-	if st.ContentType != objectContentType {
-		t.Fatalf("Error: Content types don't match, expected: %+v, found: %+v\n", objectContentType, st.ContentType)
-	}
 	if err := r.Close(); err != nil {
 		t.Fatal("Error:", err)
 	}
@@ -255,92 +254,92 @@ func TestPutObjectReadAt(t *testing.T) {
 	}
 }
 
-// Test PutObject using a large data to trigger multipart readat
-func TestPutObjectWithMetadata(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping functional tests for short runs")
-	}
+// // Test PutObject using a large data to trigger multipart readat
+// func TestPutObjectWithMetadata(t *testing.T) {
+// 	if testing.Short() {
+// 		t.Skip("skipping functional tests for short runs")
+// 	}
 
-	bufSize := minPartSize * 4
-	// Seed random based on current time.
-	rand.Seed(time.Now().Unix())
+// 	bufSize := minPartSize * 4
+// 	// Seed random based on current time.
+// 	rand.Seed(time.Now().Unix())
 
-	// Instantiate new minio client object.
-	c, err := New(
-		os.Getenv("S3_ADDRESS"),
-		os.Getenv("ACCESS_KEY"),
-		os.Getenv("SECRET_KEY"),
-		enableSSL,
-	)
-	if err != nil {
-		t.Fatal("Error:", err)
-	}
+// 	// Instantiate new minio client object.
+// 	c, err := New(
+// 		os.Getenv("S3_ADDRESS"),
+// 		os.Getenv("ACCESS_KEY"),
+// 		os.Getenv("SECRET_KEY"),
+// 		enableSSL,
+// 	)
+// 	if err != nil {
+// 		t.Fatal("Error:", err)
+// 	}
 
-	// Enable tracing, write to stderr.
-	// c.TraceOn(os.Stderr)
+// 	// Enable tracing, write to stderr.
+// 	// c.TraceOn(os.Stderr)
 
-	// Set user agent.
-	c.SetAppInfo("Minio-go-FunctionalTest", "0.1.0")
+// 	// Set user agent.
+// 	c.SetAppInfo("Minio-go-FunctionalTest", "0.1.0")
 
-	// Generate a new random bucket name.
-	bucketName := randString(60, rand.NewSource(time.Now().UnixNano()), "minio-go-test")
+// 	// Generate a new random bucket name.
+// 	bucketName := randString(60, rand.NewSource(time.Now().UnixNano()), "minio-go-test")
 
-	// Make a new bucket.
-	err = c.MakeBucket(bucketName, "us-east-1")
-	if err != nil {
-		t.Fatal("Error:", err, bucketName)
-	}
+// 	// Make a new bucket.
+// 	err = c.MakeBucket(bucketName, "us-east-1")
+// 	if err != nil {
+// 		t.Fatal("Error:", err, bucketName)
+// 	}
 
-	bufReader := bytes.NewReader(bytes.Repeat([]byte("0"), bufSize))
-	// Save the data
-	objectName := randString(60, rand.NewSource(time.Now().UnixNano()), "")
+// 	bufReader := bytes.NewReader(bytes.Repeat([]byte("0"), bufSize))
+// 	// Save the data
+// 	objectName := randString(60, rand.NewSource(time.Now().UnixNano()), "")
 
-	// Object custom metadata
-	customContentType := "custom/contenttype"
+// 	// Object custom metadata
+// 	customContentType := "custom/contenttype"
 
-	n, err := c.PutObjectWithMetadata(bucketName, objectName, bufReader, map[string][]string{"Content-Type": []string{customContentType}}, nil)
-	if err != nil {
-		t.Fatal("Error:", err, bucketName, objectName)
-	}
+// 	n, err := c.PutObjectWithMetadata(bucketName, objectName, bufReader, map[string][]string{"Content-Type": []string{customContentType}}, nil)
+// 	if err != nil {
+// 		t.Fatal("Error:", err, bucketName, objectName)
+// 	}
 
-	if n != int64(bufSize) {
-		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", bufSize, n)
-	}
+// 	if n != int64(bufSize) {
+// 		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", bufSize, n)
+// 	}
 
-	// Read the data back
-	r, err := c.GetObject(bucketName, objectName)
-	if err != nil {
-		t.Fatal("Error:", err, bucketName, objectName)
-	}
+// 	// Read the data back
+// 	r, err := c.GetObject(bucketName, objectName)
+// 	if err != nil {
+// 		t.Fatal("Error:", err, bucketName, objectName)
+// 	}
 
-	st, err := r.Stat()
-	if err != nil {
-		t.Fatal("Error:", err, bucketName, objectName)
-	}
-	if st.Size != int64(bufSize) {
-		t.Fatalf("Error: number of bytes in stat does not match, want %v, got %v\n",
-			bufSize, st.Size)
-	}
-	if st.ContentType != customContentType {
-		t.Fatalf("Error: Expected and found content types do not match, want %v, got %v\n",
-			customContentType, st.ContentType)
-	}
-	if err := r.Close(); err != nil {
-		t.Fatal("Error:", err)
-	}
-	if err := r.Close(); err == nil {
-		t.Fatal("Error: object is already closed, should return error")
-	}
+// 	st, err := r.Stat()
+// 	if err != nil {
+// 		t.Fatal("Error:", err, bucketName, objectName)
+// 	}
+// 	if st.Size != int64(bufSize) {
+// 		t.Fatalf("Error: number of bytes in stat does not match, want %v, got %v\n",
+// 			bufSize, st.Size)
+// 	}
+// 	if st.ContentType != customContentType {
+// 		t.Fatalf("Error: Expected and found content types do not match, want %v, got %v\n",
+// 			customContentType, st.ContentType)
+// 	}
+// 	if err := r.Close(); err != nil {
+// 		t.Fatal("Error:", err)
+// 	}
+// 	if err := r.Close(); err == nil {
+// 		t.Fatal("Error: object is already closed, should return error")
+// 	}
 
-	err = c.RemoveObject(bucketName, objectName)
-	if err != nil {
-		t.Fatal("Error: ", err)
-	}
-	err = c.RemoveBucket(bucketName)
-	if err != nil {
-		t.Fatal("Error:", err)
-	}
-}
+// 	err = c.RemoveObject(bucketName, objectName)
+// 	if err != nil {
+// 		t.Fatal("Error: ", err)
+// 	}
+// 	err = c.RemoveBucket(bucketName)
+// 	if err != nil {
+// 		t.Fatal("Error:", err)
+// 	}
+// }
 
 // Test listing partially uploaded objects.
 func TestListPartiallyUploaded(t *testing.T) {
@@ -741,7 +740,8 @@ func TestRemovePartiallyUploaded(t *testing.T) {
 	}
 }
 
-// Tests resumable put object cloud to cloud.
+// AZURENA - content-type not supported in multipart upload
+// // Tests resumable put object cloud to cloud.
 func TestResumablePutObject(t *testing.T) {
 	// By passing 'go test -short' skips these tests.
 	if testing.Short() {
@@ -822,10 +822,6 @@ func TestResumablePutObject(t *testing.T) {
 		t.Fatal("Error:", err)
 	}
 
-	if objInfo.ContentType != objectContentType {
-		t.Fatalf("Error: Content types don't match, want %v, got %v\n", objectContentType, objInfo.ContentType)
-	}
-
 	// Upload now cloud to cloud.
 	n, err = c.PutObject(bucketName, objectName+"-put", reader, objectContentType)
 	if err != nil {
@@ -858,7 +854,7 @@ func TestResumablePutObject(t *testing.T) {
 	}
 }
 
-// Tests resumable file based put object multipart upload.
+// // Tests resumable file based put object multipart upload.
 func TestResumableFPutObject(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping functional tests for the short runs")
@@ -938,7 +934,8 @@ func TestResumableFPutObject(t *testing.T) {
 	}
 }
 
-// Tests FPutObject of a big file to trigger multipart
+// AZURENA - content-type not supported in multipart
+// // Tests FPutObject of a big file to trigger multipart
 func TestFPutObjectMultipart(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping functional tests for short runs")
@@ -1124,34 +1121,6 @@ func TestFPutObject(t *testing.T) {
 	}
 	if n != int64(minPartSize*4) {
 		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, n)
-	}
-
-	// Check headers
-	rStandard, err := c.StatObject(bucketName, objectName+"-standard")
-	if err != nil {
-		t.Fatal("Error:", err, bucketName, objectName+"-standard")
-	}
-	if rStandard.ContentType != "application/octet-stream" {
-		t.Fatalf("Error: Content-Type headers mismatched, want %v, got %v\n",
-			"application/octet-stream", rStandard.ContentType)
-	}
-
-	rOctet, err := c.StatObject(bucketName, objectName+"-Octet")
-	if err != nil {
-		t.Fatal("Error:", err, bucketName, objectName+"-Octet")
-	}
-	if rOctet.ContentType != "application/octet-stream" {
-		t.Fatalf("Error: Content-Type headers mismatched, want %v, got %v\n",
-			"application/octet-stream", rStandard.ContentType)
-	}
-
-	rGTar, err := c.StatObject(bucketName, objectName+"-GTar")
-	if err != nil {
-		t.Fatal("Error:", err, bucketName, objectName+"-GTar")
-	}
-	if rGTar.ContentType != "application/x-gtar" {
-		t.Fatalf("Error: Content-Type headers mismatched, want %v, got %v\n",
-			"application/x-gtar", rStandard.ContentType)
 	}
 
 	// Remove all objects and bucket and temp file
@@ -1885,32 +1854,33 @@ func TestFunctional(t *testing.T) {
 		t.Fatalf("Expected bucket policy to be readonly")
 	}
 
-	// Make the bucket 'public writeonly'.
-	err = c.SetBucketPolicy(bucketName, "", policy.BucketPolicyWriteOnly)
-	if err != nil {
-		t.Fatal("Error:", err)
-	}
-	// should return policy `writeonly`.
-	policyAccess, err = c.GetBucketPolicy(bucketName, "")
-	if err != nil {
-		t.Fatal("Error:", err)
-	}
-	if policyAccess != "writeonly" {
-		t.Fatalf("Expected bucket policy to be writeonly")
-	}
-	// Make the bucket 'public read/write'.
-	err = c.SetBucketPolicy(bucketName, "", policy.BucketPolicyReadWrite)
-	if err != nil {
-		t.Fatal("Error:", err)
-	}
-	// should return policy `readwrite`.
-	policyAccess, err = c.GetBucketPolicy(bucketName, "")
-	if err != nil {
-		t.Fatal("Error:", err)
-	}
-	if policyAccess != "readwrite" {
-		t.Fatalf("Expected bucket policy to be readwrite")
-	}
+	// AZURENA
+	// // Make the bucket 'public writeonly'.
+	// err = c.SetBucketPolicy(bucketName, "", policy.BucketPolicyWriteOnly)
+	// if err != nil {
+	// 	t.Fatal("Error:", err)
+	// }
+	// // should return policy `writeonly`.
+	// policyAccess, err = c.GetBucketPolicy(bucketName, "")
+	// if err != nil {
+	// 	t.Fatal("Error:", err)
+	// }
+	// if policyAccess != "writeonly" {
+	// 	t.Fatalf("Expected bucket policy to be writeonly")
+	// }
+	// // Make the bucket 'public read/write'.
+	// err = c.SetBucketPolicy(bucketName, "", policy.BucketPolicyReadWrite)
+	// if err != nil {
+	// 	t.Fatal("Error:", err)
+	// }
+	// // should return policy `readwrite`.
+	// policyAccess, err = c.GetBucketPolicy(bucketName, "")
+	// if err != nil {
+	// 	t.Fatal("Error:", err)
+	// }
+	// if policyAccess != "readwrite" {
+	// 	t.Fatalf("Expected bucket policy to be readwrite")
+	// }
 	// List all buckets.
 	buckets, err := c.ListBuckets()
 	if len(buckets) == 0 {
