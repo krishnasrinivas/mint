@@ -969,7 +969,7 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-// AZURENA
+// AZURENA: Bucket notifications are not supported.
 // func TestBucketSQSNotification(t *testing.T) {
 // 	// Sample bucket notification.
 // 	bucketNotificationBuf := `<NotificationConfiguration><QueueConfiguration><Event>s3:ObjectCreated:Put</Event><Filter><S3Key><FilterRule><Name>prefix</Name><Value>images/</Value></FilterRule></S3Key></Filter><Id>1</Id><Queue>arn:minio:sqs:us-east-1:444455556666:amqp</Queue></QueueConfiguration></NotificationConfiguration>`
@@ -1341,7 +1341,7 @@ func TestDeleteBucket(t *testing.T) {
 // 	response.Body.Close() // FIXME. Find a way to read from the returned body.
 // }
 
-// Test deletes multple objects and verifies server resonse.
+// Test deletes multiple objects and verifies server resonse.
 func TestDeleteMultipleObjects(t *testing.T) {
 	// generate a random bucket name.
 	bucketName := getRandomBucketName()
@@ -2413,8 +2413,6 @@ func TestSHA256Mismatch(t *testing.T) {
 }
 
 // AZURENA - long names allowed in azure.
-// // TestNotBeAbleToCreateObjectInNonexistentBucket - Validates the error response
-// // on an attempt to upload an object into a non-existent bucket.
 // func TestPutObjectLongName(t *testing.T) {
 // 	// generate a random bucket name.
 // 	bucketName := getRandomBucketName()

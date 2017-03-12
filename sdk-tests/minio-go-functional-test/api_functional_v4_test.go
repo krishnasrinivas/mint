@@ -171,91 +171,88 @@ func TestMakeBucketRegions(t *testing.T) {
 	// }
 }
 
-// AZURENA - metadata not supported in multipart
+// AZURENA - metadata not supported in multipart.
 // // Test PutObject using a large data to trigger multipart readat
-// func TestPutObjectReadAt(t *testing.T) {
-// 	if testing.Short() {
-// 		t.Skip("skipping functional tests for short runs")
-// 	}
-// 	bufSize := minPartSize * 4
-// 	// Seed random based on current time.
-// 	rand.Seed(time.Now().Unix())
+func TestPutObjectReadAt(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping functional tests for short runs")
+	}
+	bufSize := minPartSize * 4
+	// Seed random based on current time.
+	rand.Seed(time.Now().Unix())
 
-// 	// Instantiate new minio client object.
-// 	c, err := New(
-// 		os.Getenv("S3_ADDRESS"),
-// 		os.Getenv("ACCESS_KEY"),
-// 		os.Getenv("SECRET_KEY"),
-// 		enableSSL,
-// 	)
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	// Instantiate new minio client object.
+	c, err := New(
+		os.Getenv("S3_ADDRESS"),
+		os.Getenv("ACCESS_KEY"),
+		os.Getenv("SECRET_KEY"),
+		enableSSL,
+	)
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	// Enable tracing, write to stderr.
-// 	// c.TraceOn(os.Stderr)
+	// Enable tracing, write to stderr.
+	// c.TraceOn(os.Stderr)
 
-// 	// Set user agent.
-// 	c.SetAppInfo("Minio-go-FunctionalTest", "0.1.0")
+	// Set user agent.
+	c.SetAppInfo("Minio-go-FunctionalTest", "0.1.0")
 
-// 	// Generate a new random bucket name.
-// 	bucketName := randString(60, rand.NewSource(time.Now().UnixNano()), "minio-go-test")
+	// Generate a new random bucket name.
+	bucketName := randString(60, rand.NewSource(time.Now().UnixNano()), "minio-go-test")
 
-// 	// Make a new bucket.
-// 	err = c.MakeBucket(bucketName, "us-east-1")
-// 	if err != nil {
-// 		t.Fatal("Error:", err, bucketName)
-// 	}
+	// Make a new bucket.
+	err = c.MakeBucket(bucketName, "us-east-1")
+	if err != nil {
+		t.Fatal("Error:", err, bucketName)
+	}
 
-// 	bufReader := bytes.NewReader(bytes.Repeat([]byte("0"), bufSize))
+	bufReader := bytes.NewReader(bytes.Repeat([]byte("0"), bufSize))
 
-// 	// Save the data
-// 	objectName := randString(60, rand.NewSource(time.Now().UnixNano()), "")
-// 	// Object content type
-// 	objectContentType := "binary/octet-stream"
+	// Save the data
+	objectName := randString(60, rand.NewSource(time.Now().UnixNano()), "")
+	// Object content type
+	objectContentType := "binary/octet-stream"
 
-// 	n, err := c.PutObject(bucketName, objectName, bufReader, objectContentType)
-// 	if err != nil {
-// 		t.Fatal("Error:", err, bucketName, objectName)
-// 	}
+	n, err := c.PutObject(bucketName, objectName, bufReader, objectContentType)
+	if err != nil {
+		t.Fatal("Error:", err, bucketName, objectName)
+	}
 
-// 	if n != int64(bufSize) {
-// 		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", bufSize, n)
-// 	}
+	if n != int64(bufSize) {
+		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", bufSize, n)
+	}
 
-// 	// Read the data back
-// 	r, err := c.GetObject(bucketName, objectName)
-// 	if err != nil {
-// 		t.Fatal("Error:", err, bucketName, objectName)
-// 	}
+	// Read the data back
+	r, err := c.GetObject(bucketName, objectName)
+	if err != nil {
+		t.Fatal("Error:", err, bucketName, objectName)
+	}
 
-// 	st, err := r.Stat()
-// 	if err != nil {
-// 		t.Fatal("Error:", err, bucketName, objectName)
-// 	}
-// 	if st.Size != int64(bufSize) {
-// 		t.Fatalf("Error: number of bytes in stat does not match, want %v, got %v\n",
-// 			bufSize, st.Size)
-// 	}
-// 	if st.ContentType != objectContentType {
-// 		t.Fatalf("Error: Content types don't match, expected: %+v, found: %+v\n", objectContentType, st.ContentType)
-// 	}
-// 	if err := r.Close(); err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// 	if err := r.Close(); err == nil {
-// 		t.Fatal("Error: object is already closed, should return error")
-// 	}
+	st, err := r.Stat()
+	if err != nil {
+		t.Fatal("Error:", err, bucketName, objectName)
+	}
+	if st.Size != int64(bufSize) {
+		t.Fatalf("Error: number of bytes in stat does not match, want %v, got %v\n",
+			bufSize, st.Size)
+	}
+	if err := r.Close(); err != nil {
+		t.Fatal("Error:", err)
+	}
+	if err := r.Close(); err == nil {
+		t.Fatal("Error: object is already closed, should return error")
+	}
 
-// 	err = c.RemoveObject(bucketName, objectName)
-// 	if err != nil {
-// 		t.Fatal("Error: ", err)
-// 	}
-// 	err = c.RemoveBucket(bucketName)
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// }
+	err = c.RemoveObject(bucketName, objectName)
+	if err != nil {
+		t.Fatal("Error: ", err)
+	}
+	err = c.RemoveBucket(bucketName)
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
+}
 
 // // Test PutObject using a large data to trigger multipart readat
 // func TestPutObjectWithMetadata(t *testing.T) {
@@ -745,447 +742,414 @@ func TestRemovePartiallyUploaded(t *testing.T) {
 
 // AZURENA - content-type not supported in multipart upload
 // // Tests resumable put object cloud to cloud.
-// func TestResumablePutObject(t *testing.T) {
-// 	// By passing 'go test -short' skips these tests.
-// 	if testing.Short() {
-// 		t.Skip("skipping functional tests for the short runs")
-// 	}
+func TestResumablePutObject(t *testing.T) {
+	// By passing 'go test -short' skips these tests.
+	if testing.Short() {
+		t.Skip("skipping functional tests for the short runs")
+	}
 
-// 	// Seed random based on current time.
-// 	rand.Seed(time.Now().Unix())
+	// Seed random based on current time.
+	rand.Seed(time.Now().Unix())
 
-// 	// Instantiate new minio client object.
-// 	c, err := New(
-// 		os.Getenv("S3_ADDRESS"),
-// 		os.Getenv("ACCESS_KEY"),
-// 		os.Getenv("SECRET_KEY"),
-// 		enableSSL,
-// 	)
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	// Instantiate new minio client object.
+	c, err := New(
+		os.Getenv("S3_ADDRESS"),
+		os.Getenv("ACCESS_KEY"),
+		os.Getenv("SECRET_KEY"),
+		enableSSL,
+	)
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	// Set user agent.
-// 	c.SetAppInfo("Minio-go-FunctionalTest", "0.1.0")
+	// Set user agent.
+	c.SetAppInfo("Minio-go-FunctionalTest", "0.1.0")
 
-// 	// Enable tracing, write to stdout.
-// 	// c.TraceOn(os.Stderr)
+	// Enable tracing, write to stdout.
+	// c.TraceOn(os.Stderr)
 
-// 	// Generate a new random bucket name.
-// 	bucketName := randString(60, rand.NewSource(time.Now().UnixNano()), "minio-go-test")
+	// Generate a new random bucket name.
+	bucketName := randString(60, rand.NewSource(time.Now().UnixNano()), "minio-go-test")
 
-// 	// Make a new bucket.
-// 	err = c.MakeBucket(bucketName, "us-east-1")
-// 	if err != nil {
-// 		t.Fatal("Error:", err, bucketName)
-// 	}
+	// Make a new bucket.
+	err = c.MakeBucket(bucketName, "us-east-1")
+	if err != nil {
+		t.Fatal("Error:", err, bucketName)
+	}
 
-// 	// Create a temporary file.
-// 	file, err := ioutil.TempFile(os.TempDir(), "resumable")
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// 	r := bytes.NewReader(bytes.Repeat([]byte("b"), minPartSize*2))
-// 	// Copy 11MiB worth of random data.
-// 	n, err := io.CopyN(file, r, minPartSize*2)
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// 	if n != int64(minPartSize*2) {
-// 		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*2, n)
-// 	}
+	// Create a temporary file.
+	file, err := ioutil.TempFile(os.TempDir(), "resumable")
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
+	r := bytes.NewReader(bytes.Repeat([]byte("b"), minPartSize*2))
+	// Copy 11MiB worth of random data.
+	n, err := io.CopyN(file, r, minPartSize*2)
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
+	if n != int64(minPartSize*2) {
+		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*2, n)
+	}
 
-// 	// Close the file pro-actively for windows.
-// 	if err = file.Close(); err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	// Close the file pro-actively for windows.
+	if err = file.Close(); err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	// New object name.
-// 	objectName := bucketName + "-resumable"
-// 	objectContentType := "application/custom-octet-stream"
+	// New object name.
+	objectName := bucketName + "-resumable"
+	objectContentType := "application/custom-octet-stream"
 
-// 	// Upload the file.
-// 	n, err = c.FPutObject(bucketName, objectName, file.Name(), objectContentType)
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// 	if n != int64(minPartSize*2) {
-// 		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*2, n)
-// 	}
+	// Upload the file.
+	n, err = c.FPutObject(bucketName, objectName, file.Name(), objectContentType)
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
+	if n != int64(minPartSize*2) {
+		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*2, n)
+	}
 
-// 	// Get the uploaded object.
-// 	reader, err := c.GetObject(bucketName, objectName)
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	// Get the uploaded object.
+	reader, err := c.GetObject(bucketName, objectName)
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	// Get object info.
-// 	objInfo, err := reader.Stat()
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	// Get object info.
+	objInfo, err := reader.Stat()
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	if objInfo.ContentType != objectContentType {
-// 		t.Fatalf("Error: Content types don't match, want %v, got %v\n", objectContentType, objInfo.ContentType)
-// 	}
+	// Upload now cloud to cloud.
+	n, err = c.PutObject(bucketName, objectName+"-put", reader, objectContentType)
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	// Upload now cloud to cloud.
-// 	n, err = c.PutObject(bucketName, objectName+"-put", reader, objectContentType)
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	if n != objInfo.Size {
+		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", objInfo.Size, n)
+	}
 
-// 	if n != objInfo.Size {
-// 		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", objInfo.Size, n)
-// 	}
+	// Remove all temp files, objects and bucket.
+	err = c.RemoveObject(bucketName, objectName)
+	if err != nil {
+		t.Fatal("Error: ", err)
+	}
 
-// 	// Remove all temp files, objects and bucket.
-// 	err = c.RemoveObject(bucketName, objectName)
-// 	if err != nil {
-// 		t.Fatal("Error: ", err)
-// 	}
+	err = c.RemoveObject(bucketName, objectName+"-put")
+	if err != nil {
+		t.Fatal("Error: ", err)
+	}
 
-// 	err = c.RemoveObject(bucketName, objectName+"-put")
-// 	if err != nil {
-// 		t.Fatal("Error: ", err)
-// 	}
+	err = c.RemoveBucket(bucketName)
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	err = c.RemoveBucket(bucketName)
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	err = os.Remove(file.Name())
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
+}
 
-// 	err = os.Remove(file.Name())
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// }
-
-// AZURENA - this function is crashing. FIXME.
 // // Tests resumable file based put object multipart upload.
-// func TestResumableFPutObject(t *testing.T) {
-// 	if testing.Short() {
-// 		t.Skip("skipping functional tests for the short runs")
-// 	}
+func TestResumableFPutObject(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping functional tests for the short runs")
+	}
 
-// 	// Seed random based on current time.
-// 	rand.Seed(time.Now().Unix())
+	// Seed random based on current time.
+	rand.Seed(time.Now().Unix())
 
-// 	// Instantiate new minio client object.
-// 	c, err := New(
-// 		os.Getenv("S3_ADDRESS"),
-// 		os.Getenv("ACCESS_KEY"),
-// 		os.Getenv("SECRET_KEY"),
-// 		enableSSL,
-// 	)
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	// Instantiate new minio client object.
+	c, err := New(
+		os.Getenv("S3_ADDRESS"),
+		os.Getenv("ACCESS_KEY"),
+		os.Getenv("SECRET_KEY"),
+		enableSSL,
+	)
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	// Set user agent.
-// 	c.SetAppInfo("Minio-go-FunctionalTest", "0.1.0")
+	// Set user agent.
+	c.SetAppInfo("Minio-go-FunctionalTest", "0.1.0")
 
-// 	// Enable tracing, write to stdout.
-// 	// c.TraceOn(os.Stderr)
+	// Enable tracing, write to stdout.
+	// c.TraceOn(os.Stderr)
 
-// 	// Generate a new random bucket name.
-// 	bucketName := randString(60, rand.NewSource(time.Now().UnixNano()), "minio-go-test")
+	// Generate a new random bucket name.
+	bucketName := randString(60, rand.NewSource(time.Now().UnixNano()), "minio-go-test")
 
-// 	// Make a new bucket.
-// 	err = c.MakeBucket(bucketName, "us-east-1")
-// 	if err != nil {
-// 		t.Fatal("Error:", err, bucketName)
-// 	}
+	// Make a new bucket.
+	err = c.MakeBucket(bucketName, "us-east-1")
+	if err != nil {
+		t.Fatal("Error:", err, bucketName)
+	}
 
-// 	file, err := ioutil.TempFile(os.TempDir(), "resumable")
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	file, err := ioutil.TempFile(os.TempDir(), "resumable")
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	size, err := file.Write(bytes.Repeat([]byte("0"), minPartSize*4))
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// 	if size != minPartSize*4 {
-// 		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, size)
-// 	}
+	size, err := file.Write(bytes.Repeat([]byte("0"), minPartSize*4))
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
+	if size != minPartSize*4 {
+		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, size)
+	}
 
-// 	// Close the file pro-actively for windows.
-// 	err = file.Close()
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	// Close the file pro-actively for windows.
+	err = file.Close()
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	objectName := bucketName + "-resumable"
+	objectName := bucketName + "-resumable"
 
-// 	n, err := c.FPutObject(bucketName, objectName, file.Name(), "application/octet-stream")
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// 	if n != int64(minPartSize*4) {
-// 		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, n)
-// 	}
+	n, err := c.FPutObject(bucketName, objectName, file.Name(), "application/octet-stream")
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
+	if n != int64(minPartSize*4) {
+		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, n)
+	}
 
-// 	err = c.RemoveObject(bucketName, objectName)
-// 	if err != nil {
-// 		t.Fatal("Error: ", err)
-// 	}
+	err = c.RemoveObject(bucketName, objectName)
+	if err != nil {
+		t.Fatal("Error: ", err)
+	}
 
-// 	err = c.RemoveBucket(bucketName)
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	err = c.RemoveBucket(bucketName)
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	err = os.Remove(file.Name())
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// }
+	err = os.Remove(file.Name())
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
+}
 
 // AZURENA - content-type not supported in multipart
 // // Tests FPutObject of a big file to trigger multipart
-// func TestFPutObjectMultipart(t *testing.T) {
-// 	if testing.Short() {
-// 		t.Skip("skipping functional tests for short runs")
-// 	}
+func TestFPutObjectMultipart(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping functional tests for short runs")
+	}
 
-// 	// Seed random based on current time.
-// 	rand.Seed(time.Now().Unix())
+	// Seed random based on current time.
+	rand.Seed(time.Now().Unix())
 
-// 	// Instantiate new minio client object.
-// 	c, err := New(
-// 		os.Getenv("S3_ADDRESS"),
-// 		os.Getenv("ACCESS_KEY"),
-// 		os.Getenv("SECRET_KEY"),
-// 		enableSSL,
-// 	)
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	// Instantiate new minio client object.
+	c, err := New(
+		os.Getenv("S3_ADDRESS"),
+		os.Getenv("ACCESS_KEY"),
+		os.Getenv("SECRET_KEY"),
+		enableSSL,
+	)
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	// Enable tracing, write to stderr.
-// 	// c.TraceOn(os.Stderr)
+	// Enable tracing, write to stderr.
+	// c.TraceOn(os.Stderr)
 
-// 	// Set user agent.
-// 	c.SetAppInfo("Minio-go-FunctionalTest", "0.1.0")
+	// Set user agent.
+	c.SetAppInfo("Minio-go-FunctionalTest", "0.1.0")
 
-// 	// Generate a new random bucket name.
-// 	bucketName := randString(60, rand.NewSource(time.Now().UnixNano()), "minio-go-test")
+	// Generate a new random bucket name.
+	bucketName := randString(60, rand.NewSource(time.Now().UnixNano()), "minio-go-test")
 
-// 	// Make a new bucket.
-// 	err = c.MakeBucket(bucketName, "us-east-1")
-// 	if err != nil {
-// 		t.Fatal("Error:", err, bucketName)
-// 	}
+	// Make a new bucket.
+	err = c.MakeBucket(bucketName, "us-east-1")
+	if err != nil {
+		t.Fatal("Error:", err, bucketName)
+	}
 
-// 	// Make a temp file with minPartSize*4 bytes of data.
-// 	file, err := ioutil.TempFile(os.TempDir(), "FPutObjectTest")
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	// Make a temp file with minPartSize*4 bytes of data.
+	file, err := ioutil.TempFile(os.TempDir(), "FPutObjectTest")
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	size, err := file.Write(bytes.Repeat([]byte("0"), minPartSize*4))
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// 	if size != minPartSize*4 {
-// 		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, size)
-// 	}
+	size, err := file.Write(bytes.Repeat([]byte("0"), minPartSize*4))
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
+	if size != minPartSize*4 {
+		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, size)
+	}
 
-// 	// Close the file pro-actively for windows.
-// 	err = file.Close()
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	// Close the file pro-actively for windows.
+	err = file.Close()
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	// Set base object name
-// 	objectName := bucketName + "FPutObject"
-// 	objectContentType := "testapplication/octet-stream"
+	// Set base object name
+	objectName := bucketName + "FPutObject"
+	objectContentType := "testapplication/octet-stream"
 
-// 	// Perform standard FPutObject with contentType provided (Expecting application/octet-stream)
-// 	n, err := c.FPutObject(bucketName, objectName+"-standard", file.Name(), objectContentType)
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// 	if n != int64(minPartSize*4) {
-// 		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, n)
-// 	}
+	// Perform standard FPutObject with contentType provided (Expecting application/octet-stream)
+	n, err := c.FPutObject(bucketName, objectName+"-standard", file.Name(), objectContentType)
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
+	if n != int64(minPartSize*4) {
+		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, n)
+	}
 
-// 	r, err := c.GetObject(bucketName, objectName+"-standard")
-// 	if err != nil {
-// 		t.Fatalf("Unexpected error: %v\n", err)
-// 	}
-// 	objInfo, err := r.Stat()
-// 	if err != nil {
-// 		t.Fatalf("Unexpected error: %v\n", err)
-// 	}
-// 	if objInfo.Size != minPartSize*4 {
-// 		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, n)
-// 	}
-// 	if objInfo.ContentType != objectContentType {
-// 		t.Fatalf("Error: Content types don't match, want %v, got %v\n", objectContentType, objInfo.ContentType)
-// 	}
+	r, err := c.GetObject(bucketName, objectName+"-standard")
+	if err != nil {
+		t.Fatalf("Unexpected error: %v\n", err)
+	}
+	objInfo, err := r.Stat()
+	if err != nil {
+		t.Fatalf("Unexpected error: %v\n", err)
+	}
+	if objInfo.Size != minPartSize*4 {
+		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, n)
+	}
+	if objInfo.ContentType != objectContentType {
+		t.Fatalf("Error: Content types don't match, want %v, got %v\n", objectContentType, objInfo.ContentType)
+	}
 
-// 	// Remove all objects and bucket and temp file
-// 	err = c.RemoveObject(bucketName, objectName+"-standard")
-// 	if err != nil {
-// 		t.Fatal("Error: ", err)
-// 	}
+	// Remove all objects and bucket and temp file
+	err = c.RemoveObject(bucketName, objectName+"-standard")
+	if err != nil {
+		t.Fatal("Error: ", err)
+	}
 
-// 	err = c.RemoveBucket(bucketName)
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// }
+	err = c.RemoveBucket(bucketName)
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
+}
 
-// // Tests FPutObject hidden contentType setting
-// func TestFPutObject(t *testing.T) {
-// 	if testing.Short() {
-// 		t.Skip("skipping functional tests for short runs")
-// 	}
+// Tests FPutObject hidden contentType setting
+func TestFPutObject(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping functional tests for short runs")
+	}
 
-// 	// Seed random based on current time.
-// 	rand.Seed(time.Now().Unix())
+	// Seed random based on current time.
+	rand.Seed(time.Now().Unix())
 
-// 	// Instantiate new minio client object.
-// 	c, err := New(
-// 		os.Getenv("S3_ADDRESS"),
-// 		os.Getenv("ACCESS_KEY"),
-// 		os.Getenv("SECRET_KEY"),
-// 		enableSSL,
-// 	)
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	// Instantiate new minio client object.
+	c, err := New(
+		os.Getenv("S3_ADDRESS"),
+		os.Getenv("ACCESS_KEY"),
+		os.Getenv("SECRET_KEY"),
+		enableSSL,
+	)
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	// Enable tracing, write to stderr.
-// 	// c.TraceOn(os.Stderr)
+	// Enable tracing, write to stderr.
+	// c.TraceOn(os.Stderr)
 
-// 	// Set user agent.
-// 	c.SetAppInfo("Minio-go-FunctionalTest", "0.1.0")
+	// Set user agent.
+	c.SetAppInfo("Minio-go-FunctionalTest", "0.1.0")
 
-// 	// Generate a new random bucket name.
-// 	bucketName := randString(60, rand.NewSource(time.Now().UnixNano()), "minio-go-test")
+	// Generate a new random bucket name.
+	bucketName := randString(60, rand.NewSource(time.Now().UnixNano()), "minio-go-test")
 
-// 	// Make a new bucket.
-// 	err = c.MakeBucket(bucketName, "us-east-1")
-// 	if err != nil {
-// 		t.Fatal("Error:", err, bucketName)
-// 	}
+	// Make a new bucket.
+	err = c.MakeBucket(bucketName, "us-east-1")
+	if err != nil {
+		t.Fatal("Error:", err, bucketName)
+	}
 
-// 	// Make a temp file with minPartSize*4 bytes of data.
-// 	file, err := ioutil.TempFile(os.TempDir(), "FPutObjectTest")
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	// Make a temp file with minPartSize*4 bytes of data.
+	file, err := ioutil.TempFile(os.TempDir(), "FPutObjectTest")
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	// Write the data to the file.
-// 	size, err := file.Write(bytes.Repeat([]byte("0"), minPartSize*4))
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// 	if size != minPartSize*4 {
-// 		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, size)
-// 	}
+	// Write the data to the file.
+	size, err := file.Write(bytes.Repeat([]byte("0"), minPartSize*4))
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
+	if size != minPartSize*4 {
+		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, size)
+	}
 
-// 	// Close the file pro-actively for windows.
-// 	err = file.Close()
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	// Close the file pro-actively for windows.
+	err = file.Close()
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	// Set base object name
-// 	objectName := bucketName + "FPutObject"
+	// Set base object name
+	objectName := bucketName + "FPutObject"
 
-// 	// Perform standard FPutObject with contentType provided (Expecting application/octet-stream)
-// 	n, err := c.FPutObject(bucketName, objectName+"-standard", file.Name(), "application/octet-stream")
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// 	if n != int64(minPartSize*4) {
-// 		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, n)
-// 	}
+	// Perform standard FPutObject with contentType provided (Expecting application/octet-stream)
+	n, err := c.FPutObject(bucketName, objectName+"-standard", file.Name(), "application/octet-stream")
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
+	if n != int64(minPartSize*4) {
+		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, n)
+	}
 
-// 	// Perform FPutObject with no contentType provided (Expecting application/octet-stream)
-// 	n, err = c.FPutObject(bucketName, objectName+"-Octet", file.Name(), "")
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// 	if n != int64(minPartSize*4) {
-// 		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, n)
-// 	}
+	// Perform FPutObject with no contentType provided (Expecting application/octet-stream)
+	n, err = c.FPutObject(bucketName, objectName+"-Octet", file.Name(), "")
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
+	if n != int64(minPartSize*4) {
+		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, n)
+	}
 
-// 	// Add extension to temp file name
-// 	fileName := file.Name()
-// 	err = os.Rename(file.Name(), fileName+".gtar")
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
+	// Add extension to temp file name
+	fileName := file.Name()
+	err = os.Rename(file.Name(), fileName+".gtar")
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	// Perform FPutObject with no contentType provided (Expecting application/x-gtar)
-// 	n, err = c.FPutObject(bucketName, objectName+"-GTar", fileName+".gtar", "")
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-// 	if n != int64(minPartSize*4) {
-// 		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, n)
-// 	}
+	// Perform FPutObject with no contentType provided (Expecting application/x-gtar)
+	n, err = c.FPutObject(bucketName, objectName+"-GTar", fileName+".gtar", "")
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
+	if n != int64(minPartSize*4) {
+		t.Fatalf("Error: number of bytes does not match, want %v, got %v\n", minPartSize*4, n)
+	}
 
-// 	// Check headers
-// 	rStandard, err := c.StatObject(bucketName, objectName+"-standard")
-// 	if err != nil {
-// 		t.Fatal("Error:", err, bucketName, objectName+"-standard")
-// 	}
-// 	if rStandard.ContentType != "application/octet-stream" {
-// 		t.Fatalf("Error: Content-Type headers mismatched, want %v, got %v\n",
-// 			"application/octet-stream", rStandard.ContentType)
-// 	}
+	// Remove all objects and bucket and temp file
+	err = c.RemoveObject(bucketName, objectName+"-standard")
+	if err != nil {
+		t.Fatal("Error: ", err)
+	}
 
-// 	rOctet, err := c.StatObject(bucketName, objectName+"-Octet")
-// 	if err != nil {
-// 		t.Fatal("Error:", err, bucketName, objectName+"-Octet")
-// 	}
-// 	if rOctet.ContentType != "application/octet-stream" {
-// 		t.Fatalf("Error: Content-Type headers mismatched, want %v, got %v\n",
-// 			"application/octet-stream", rStandard.ContentType)
-// 	}
+	err = c.RemoveObject(bucketName, objectName+"-Octet")
+	if err != nil {
+		t.Fatal("Error: ", err)
+	}
 
-// 	rGTar, err := c.StatObject(bucketName, objectName+"-GTar")
-// 	if err != nil {
-// 		t.Fatal("Error:", err, bucketName, objectName+"-GTar")
-// 	}
-// 	if rGTar.ContentType != "application/x-gtar" {
-// 		t.Fatalf("Error: Content-Type headers mismatched, want %v, got %v\n",
-// 			"application/x-gtar", rStandard.ContentType)
-// 	}
+	err = c.RemoveObject(bucketName, objectName+"-GTar")
+	if err != nil {
+		t.Fatal("Error: ", err)
+	}
 
-// 	// Remove all objects and bucket and temp file
-// 	err = c.RemoveObject(bucketName, objectName+"-standard")
-// 	if err != nil {
-// 		t.Fatal("Error: ", err)
-// 	}
+	err = c.RemoveBucket(bucketName)
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	err = c.RemoveObject(bucketName, objectName+"-Octet")
-// 	if err != nil {
-// 		t.Fatal("Error: ", err)
-// 	}
+	err = os.Remove(fileName + ".gtar")
+	if err != nil {
+		t.Fatal("Error:", err)
+	}
 
-// 	err = c.RemoveObject(bucketName, objectName+"-GTar")
-// 	if err != nil {
-// 		t.Fatal("Error: ", err)
-// 	}
-
-// 	err = c.RemoveBucket(bucketName)
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-
-// 	err = os.Remove(fileName + ".gtar")
-// 	if err != nil {
-// 		t.Fatal("Error:", err)
-// 	}
-
-// }
+}
 
 // Tests get object ReaderSeeker interface methods.
 func TestGetObjectReadSeekFunctional(t *testing.T) {
