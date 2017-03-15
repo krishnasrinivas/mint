@@ -969,150 +969,152 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-// AZURENA: Bucket notifications are not supported.
-// func TestBucketSQSNotification(t *testing.T) {
-// 	// Sample bucket notification.
-// 	bucketNotificationBuf := `<NotificationConfiguration><QueueConfiguration><Event>s3:ObjectCreated:Put</Event><Filter><S3Key><FilterRule><Name>prefix</Name><Value>images/</Value></FilterRule></S3Key></Filter><Id>1</Id><Queue>arn:minio:sqs:us-east-1:444455556666:amqp</Queue></QueueConfiguration></NotificationConfiguration>`
-// 	// generate a random bucket Name.
-// 	bucketName := getRandomBucketName()
-// 	// HTTP request to create the bucket.
-// 	request, err := newTestSignedRequest("PUT", getMakeBucketURL(endPoint, bucketName),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+/* AZURENA: Bucket notificaion not supported
+func TestBucketSQSNotification(t *testing.T) {
+	// Sample bucket notification.
+	bucketNotificationBuf := `<NotificationConfiguration><QueueConfiguration><Event>s3:ObjectCreated:Put</Event><Filter><S3Key><FilterRule><Name>prefix</Name><Value>images/</Value></FilterRule></S3Key></Filter><Id>1</Id><Queue>arn:minio:sqs:us-east-1:444455556666:amqp</Queue></QueueConfiguration></NotificationConfiguration>`
+	// generate a random bucket Name.
+	bucketName := getRandomBucketName()
+	// HTTP request to create the bucket.
+	request, err := newTestSignedRequest("PUT", getMakeBucketURL(endPoint, bucketName),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	client := &http.Client{}
-// 	// execute the request.
-// 	response, err := client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	client := &http.Client{}
+	// execute the request.
+	response, err := client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	// assert the http response status code.
-// 	if response.StatusCode != http.StatusOK {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
-// 	}
+	// assert the http response status code.
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
+	}
 
-// 	request, err = newTestSignedRequest("PUT", getPutNotificationURL(endPoint, bucketName),
-// 		int64(len(bucketNotificationBuf)), bytes.NewReader([]byte(bucketNotificationBuf)), accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	request, err = newTestSignedRequest("PUT", getPutNotificationURL(endPoint, bucketName),
+		int64(len(bucketNotificationBuf)), bytes.NewReader([]byte(bucketNotificationBuf)), accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	client = &http.Client{}
-// 	// execute the HTTP request.
-// 	response, err = client.Do(request)
+	client = &http.Client{}
+	// execute the HTTP request.
+	response, err = client.Do(request)
 
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	verifyError(t, response, "InvalidArgument", "A specified destination ARN does not exist or is not well-formed. Verify the destination ARN.", http.StatusBadRequest)
-// }
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	verifyError(t, response, "InvalidArgument", "A specified destination ARN does not exist or is not well-formed. Verify the destination ARN.", http.StatusBadRequest)
+}
+*/
 
-// AZURENA - bucket policy not allowed for prefixes
-// // TestBucketPolicy - Inserts the bucket policy and verifies it by fetching the policy back.
-// // Deletes the policy and verifies the deletion by fetching it back.
-// func TestBucketPolicy(t *testing.T) {
+/* AZURENA : Setting bucket policy for prefizes not allowed
+// TestBucketPolicy - Inserts the bucket policy and verifies it by fetching the policy back.
+// Deletes the policy and verifies the deletion by fetching it back.
+func TestBucketPolicy(t *testing.T) {
 
-// 	// Sample bucket policy.
-// 	bucketPolicyBuf := `{"Version":"2012-10-17","Statement":[{"Action":["s3:GetBucketLocation","s3:ListBucket"],"Effect":"Allow","Principal":{"AWS":["*"]},"Resource":["arn:aws:s3:::%s"],"Sid":""},{"Action":["s3:GetObject"],"Effect":"Allow","Principal":{"AWS":["*"]},"Resource":["arn:aws:s3:::%s/this*"],"Sid":""}]}`
+	// Sample bucket policy.
+	bucketPolicyBuf := `{"Version":"2012-10-17","Statement":[{"Action":["s3:GetBucketLocation","s3:ListBucket"],"Effect":"Allow","Principal":{"AWS":["*"]},"Resource":["arn:aws:s3:::%s"],"Sid":""},{"Action":["s3:GetObject"],"Effect":"Allow","Principal":{"AWS":["*"]},"Resource":["arn:aws:s3:::%s/this*"],"Sid":""}]}`
 
-// 	// generate a random bucket Name.
-// 	bucketName := getRandomBucketName()
-// 	// create the policy statement string with the randomly generated bucket name.
-// 	bucketPolicyStr := fmt.Sprintf(bucketPolicyBuf, bucketName, bucketName)
-// 	// HTTP request to create the bucket.
-// 	request, err := newTestSignedRequest("PUT", getMakeBucketURL(endPoint, bucketName),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	// generate a random bucket Name.
+	bucketName := getRandomBucketName()
+	// create the policy statement string with the randomly generated bucket name.
+	bucketPolicyStr := fmt.Sprintf(bucketPolicyBuf, bucketName, bucketName)
+	// HTTP request to create the bucket.
+	request, err := newTestSignedRequest("PUT", getMakeBucketURL(endPoint, bucketName),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	client := &http.Client{}
-// 	// execute the request.
-// 	response, err := client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	// assert the http response status code.
-// 	if response.StatusCode != http.StatusOK {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
-// 	}
+	client := &http.Client{}
+	// execute the request.
+	response, err := client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	// assert the http response status code.
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
+	}
 
-// 	/// Put a new bucket policy.
-// 	request, err = newTestSignedRequest("PUT", getPutPolicyURL(endPoint, bucketName),
-// 		int64(len(bucketPolicyStr)), bytes.NewReader([]byte(bucketPolicyStr)), accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	/// Put a new bucket policy.
+	request, err = newTestSignedRequest("PUT", getPutPolicyURL(endPoint, bucketName),
+		int64(len(bucketPolicyStr)), bytes.NewReader([]byte(bucketPolicyStr)), accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	client = &http.Client{}
-// 	// execute the HTTP request to create bucket.
-// 	response, err = client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if response.StatusCode != http.StatusNoContent {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusNoContent, response.StatusCode)
-// 	}
+	client = &http.Client{}
+	// execute the HTTP request to create bucket.
+	response, err = client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if response.StatusCode != http.StatusNoContent {
+		t.Errorf("Expected response status %d, got %d", http.StatusNoContent, response.StatusCode)
+	}
 
-// 	// Fetch the uploaded policy.
-// 	request, err = newTestSignedRequest("GET", getGetPolicyURL(endPoint, bucketName), 0, nil,
-// 		accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	// Fetch the uploaded policy.
+	request, err = newTestSignedRequest("GET", getGetPolicyURL(endPoint, bucketName), 0, nil,
+		accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	client = &http.Client{}
-// 	response, err = client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if response.StatusCode != http.StatusOK {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
-// 	}
+	client = &http.Client{}
+	response, err = client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
+	}
 
-// 	bucketPolicyReadBuf, err := ioutil.ReadAll(response.Body)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	// Verify if downloaded policy matches with previousy uploaded.
-// 	if !bytes.Equal([]byte(bucketPolicyStr), bucketPolicyReadBuf) {
-// 		t.Fatalf("The downloaded policy doesn't match with the upload one.\nExpected:\n %s, Got: \n %s", bucketPolicyStr, string(bucketPolicyReadBuf))
-// 	}
+	bucketPolicyReadBuf, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	// Verify if downloaded policy matches with previousy uploaded.
+	if !bytes.Equal([]byte(bucketPolicyStr), bucketPolicyReadBuf) {
+		t.Fatalf("The downloaded policy doesn't match with the upload one.\nExpected:\n %s, Got: \n %s", bucketPolicyStr, string(bucketPolicyReadBuf))
+	}
 
-// 	// Delete policy.
-// 	request, err = newTestSignedRequest("DELETE", getDeletePolicyURL(endPoint, bucketName), 0, nil,
-// 		accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	// Delete policy.
+	request, err = newTestSignedRequest("DELETE", getDeletePolicyURL(endPoint, bucketName), 0, nil,
+		accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	client = &http.Client{}
-// 	response, err = client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if response.StatusCode != http.StatusNoContent {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusNoContent, response.StatusCode)
-// 	}
-// 	// Verify if the policy was indeed deleted.
-// 	request, err = newTestSignedRequest("GET", getGetPolicyURL(endPoint, bucketName),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	client = &http.Client{}
+	response, err = client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if response.StatusCode != http.StatusNoContent {
+		t.Errorf("Expected response status %d, got %d", http.StatusNoContent, response.StatusCode)
+	}
+	// Verify if the policy was indeed deleted.
+	request, err = newTestSignedRequest("GET", getGetPolicyURL(endPoint, bucketName),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	client = &http.Client{}
-// 	response, err = client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if response.StatusCode != http.StatusNotFound {
-// 		t.Errorf("Expected response status %v, got %v", http.StatusNotFound, response.StatusCode)
-// 	}
-// }
+	client = &http.Client{}
+	response, err = client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if response.StatusCode != http.StatusNotFound {
+		t.Errorf("Expected response status %v, got %v", http.StatusNotFound, response.StatusCode)
+	}
+}
+*/
 
 // TestDeleteBucket - validates DELETE bucket operation.
 func TestDeleteBucket(t *testing.T) {
@@ -1153,195 +1155,196 @@ func TestDeleteBucket(t *testing.T) {
 	}
 }
 
-// AZURENA - azure deletes non-empty buckets
-// // TestDeleteBucketNotEmpty - Validates the operation during an attempt to delete a non-empty bucket.
-// func TestDeleteBucketNotEmpty(t *testing.T) {
-// 	// generate a random bucket name.
-// 	bucketName := getRandomBucketName()
+/* AZURENA: Empty buckets automatically deleted
+// TestDeleteBucketNotEmpty - Validates the operation during an attempt to delete a non-empty bucket.
+func TestDeleteBucketNotEmpty(t *testing.T) {
+	// generate a random bucket name.
+	bucketName := getRandomBucketName()
 
-// 	// HTTP request to create the bucket.
-// 	request, err := newTestSignedRequest("PUT", getMakeBucketURL(endPoint, bucketName),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	// HTTP request to create the bucket.
+	request, err := newTestSignedRequest("PUT", getMakeBucketURL(endPoint, bucketName),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	client := &http.Client{}
-// 	// execute the request.
-// 	response, err := client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	// assert the response status code.
-// 	if response.StatusCode != http.StatusOK {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
-// 	}
+	client := &http.Client{}
+	// execute the request.
+	response, err := client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	// assert the response status code.
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
+	}
 
-// 	// generate http request for an object upload.
-// 	// "test-object" is the object name.
-// 	objectName := "test-object"
-// 	request, err = newTestSignedRequest("PUT", getPutObjectURL(endPoint, bucketName, objectName),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	// generate http request for an object upload.
+	// "test-object" is the object name.
+	objectName := "test-object"
+	request, err = newTestSignedRequest("PUT", getPutObjectURL(endPoint, bucketName, objectName),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	client = &http.Client{}
-// 	// execute the request to complete object upload.
-// 	response, err = client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	// assert the status code of the response.
-// 	if response.StatusCode != http.StatusOK {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
-// 	}
+	client = &http.Client{}
+	// execute the request to complete object upload.
+	response, err = client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	// assert the status code of the response.
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
+	}
 
-// 	// constructing http request to delete the bucket.
-// 	// making an attempt to delete an non-empty bucket.
-// 	// expected to fail.
-// 	request, err = newTestSignedRequest("DELETE", getDeleteBucketURL(endPoint, bucketName),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	// constructing http request to delete the bucket.
+	// making an attempt to delete an non-empty bucket.
+	// expected to fail.
+	request, err = newTestSignedRequest("DELETE", getDeleteBucketURL(endPoint, bucketName),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	client = &http.Client{}
-// 	response, err = client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if response.StatusCode != http.StatusConflict {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusConflict, response.StatusCode)
-// 	}
+	client = &http.Client{}
+	response, err = client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if response.StatusCode != http.StatusConflict {
+		t.Errorf("Expected response status %d, got %d", http.StatusConflict, response.StatusCode)
+	}
 
-// }
+}
+*/
+/* AZURENA: Bucket notiifications not supported
+func TestListenBucketNotificationHandler(t *testing.T) {
+	// generate a random bucket name.
+	bucketName := getRandomBucketName()
+	// HTTP request to create the bucket.
+	req, err := newTestSignedRequest("PUT", getMakeBucketURL(endPoint, bucketName),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// AZURENA
-// func TestListenBucketNotificationHandler(t *testing.T) {
-// 	// generate a random bucket name.
-// 	bucketName := getRandomBucketName()
-// 	// HTTP request to create the bucket.
-// 	req, err := newTestSignedRequest("PUT", getMakeBucketURL(endPoint, bucketName),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	client := &http.Client{}
+	// execute the request.
+	response, err := client.Do(req)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	// assert the http response status code.
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
+	}
 
-// 	client := &http.Client{}
-// 	// execute the request.
-// 	response, err := client.Do(req)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	// assert the http response status code.
-// 	if response.StatusCode != http.StatusOK {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
-// 	}
+	invalidBucket := "Invalid\\Bucket"
+	tooByte := bytes.Repeat([]byte("a"), 1025)
+	tooBigPrefix := string(tooByte)
+	validEvents := []string{"s3:ObjectCreated:*", "s3:ObjectRemoved:*"}
+	invalidEvents := []string{"invalidEvent"}
 
-// 	invalidBucket := "Invalid\\Bucket"
-// 	tooByte := bytes.Repeat([]byte("a"), 1025)
-// 	tooBigPrefix := string(tooByte)
-// 	validEvents := []string{"s3:ObjectCreated:*", "s3:ObjectRemoved:*"}
-// 	invalidEvents := []string{"invalidEvent"}
+	req, err = newTestSignedRequest("GET",
+		getListenBucketNotificationURL(endPoint, invalidBucket, []string{}, []string{}, []string{}),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	req, err = newTestSignedRequest("GET",
-// 		getListenBucketNotificationURL(endPoint, invalidBucket, []string{}, []string{}, []string{}),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	client = &http.Client{}
+	// execute the request.
+	response, err = client.Do(req)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	verifyError(t, response, "InvalidBucketName", "The specified bucket is not valid.", http.StatusBadRequest)
 
-// 	client = &http.Client{}
-// 	// execute the request.
-// 	response, err = client.Do(req)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	verifyError(t, response, "InvalidBucketName", "The specified bucket is not valid.", http.StatusBadRequest)
+	req, err = newTestSignedRequest("GET",
+		getListenBucketNotificationURL(endPoint, bucketName, []string{}, []string{}, invalidEvents),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	req, err = newTestSignedRequest("GET",
-// 		getListenBucketNotificationURL(endPoint, bucketName, []string{}, []string{}, invalidEvents),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	client = &http.Client{}
+	// execute the request.
+	response, err = client.Do(req)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	verifyError(t, response, "InvalidArgument", "A specified event is not supported for notifications.", http.StatusBadRequest)
 
-// 	client = &http.Client{}
-// 	// execute the request.
-// 	response, err = client.Do(req)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	verifyError(t, response, "InvalidArgument", "A specified event is not supported for notifications.", http.StatusBadRequest)
+	req, err = newTestSignedRequest("GET",
+		getListenBucketNotificationURL(endPoint, bucketName, []string{tooBigPrefix}, []string{}, validEvents),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	req, err = newTestSignedRequest("GET",
-// 		getListenBucketNotificationURL(endPoint, bucketName, []string{tooBigPrefix}, []string{}, validEvents),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	client = &http.Client{}
+	// execute the request.
+	response, err = client.Do(req)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	verifyError(t, response, "InvalidArgument", "Size of filter rule value cannot exceed 1024 bytes in UTF-8 representation", http.StatusBadRequest)
 
-// 	client = &http.Client{}
-// 	// execute the request.
-// 	response, err = client.Do(req)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	verifyError(t, response, "InvalidArgument", "Size of filter rule value cannot exceed 1024 bytes in UTF-8 representation", http.StatusBadRequest)
+	req, err = newTestSignedRequest("GET",
+		getListenBucketNotificationURL(endPoint, bucketName, []string{}, []string{}, validEvents),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	req, err = newTestSignedRequest("GET",
-// 		getListenBucketNotificationURL(endPoint, bucketName, []string{}, []string{}, validEvents),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	req.Header.Set("x-amz-content-sha256", "somethingElse")
+	client = &http.Client{}
+	// execute the request.
+	response, err = client.Do(req)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if signerV4 == signerV4 {
+		verifyError(t, response, "XAmzContentSHA256Mismatch", "The provided 'x-amz-content-sha256' header does not match what was computed.", http.StatusBadRequest)
+	}
 
-// 	req.Header.Set("x-amz-content-sha256", "somethingElse")
-// 	client = &http.Client{}
-// 	// execute the request.
-// 	response, err = client.Do(req)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if signerV4 == signerV4 {
-// 		verifyError(t, response, "XAmzContentSHA256Mismatch", "The provided 'x-amz-content-sha256' header does not match what was computed.", http.StatusBadRequest)
-// 	}
+	// Change global value from 5 second to 100millisecond.
+	globalSNSConnAlive = 100 * time.Millisecond
+	req, err = newTestSignedRequest("GET",
+		getListenBucketNotificationURL(endPoint, bucketName,
+			[]string{}, []string{}, validEvents), 0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	client = &http.Client{}
+	// execute the request.
+	response, err = client.Do(req)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
+	}
+	// FIXME: uncomment this in future when we have a code to read notifications from.
+	// go func() {
+	// 	buf := bytes.NewReader(tooByte)
+	// 	rreq, rerr := newTestSignedRequest("GET",
+	// 		getPutObjectURL(endPoint, bucketName, "myobject/1"),
+	// 		int64(buf.Len()), buf, accessKey, secretKey, signerV4)
+	// 	c.Assert(rerr, IsNil)
+	// 	client = &http.Client{}
+	// 	// execute the request.
+	// 	resp, rerr := client.Do(rreq)
+	// 	c.Assert(rerr, IsNil)
+	// 	c.Assert(resp.StatusCode, Equals, http.StatusOK)
+	// }()
+	response.Body.Close() // FIXME. Find a way to read from the returned body.
+}
+*/
 
-// 	// Change global value from 5 second to 100millisecond.
-// 	globalSNSConnAlive = 100 * time.Millisecond
-// 	req, err = newTestSignedRequest("GET",
-// 		getListenBucketNotificationURL(endPoint, bucketName,
-// 			[]string{}, []string{}, validEvents), 0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	client = &http.Client{}
-// 	// execute the request.
-// 	response, err = client.Do(req)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if response.StatusCode != http.StatusOK {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
-// 	}
-// 	// FIXME: uncomment this in future when we have a code to read notifications from.
-// 	// go func() {
-// 	// 	buf := bytes.NewReader(tooByte)
-// 	// 	rreq, rerr := newTestSignedRequest("GET",
-// 	// 		getPutObjectURL(endPoint, bucketName, "myobject/1"),
-// 	// 		int64(buf.Len()), buf, accessKey, secretKey, signerV4)
-// 	// 	c.Assert(rerr, IsNil)
-// 	// 	client = &http.Client{}
-// 	// 	// execute the request.
-// 	// 	resp, rerr := client.Do(rreq)
-// 	// 	c.Assert(rerr, IsNil)
-// 	// 	c.Assert(resp.StatusCode, Equals, http.StatusOK)
-// 	// }()
-// 	response.Body.Close() // FIXME. Find a way to read from the returned body.
-// }
-
-// Test deletes multiple objects and verifies server resonse.
+// Test deletes multple objects and verifies server resonse.
 func TestDeleteMultipleObjects(t *testing.T) {
 	// generate a random bucket name.
 	bucketName := getRandomBucketName()
@@ -2048,26 +2051,27 @@ func TestNotImplemented(t *testing.T) {
 	}
 }
 
-// AZURENA - azure sdk does not give enough info to differentiate between NoSuchBucket and NoSuchKey
-// // TestHeader - Validates the error response for an attempt to fetch non-existent object.
-// func TestHeader(t *testing.T) {
-// 	// generate a random bucket name.
-// 	bucketName := getRandomBucketName()
-// 	// obtain HTTP request to fetch an object from non-existent bucket/object.
-// 	request, err := newTestSignedRequest("GET", getGetObjectURL(endPoint, bucketName, "testObject"),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+// TestHeader - Validates the error response for an attempt to fetch non-existent object.
+/* AZURENA: Cannot distuinguish between NoSuch Key and NoSuchBucket
+func TestHeader(t *testing.T) {
+	// generate a random bucket name.
+	bucketName := getRandomBucketName()
+	// obtain HTTP request to fetch an object from non-existent bucket/object.
+	request, err := newTestSignedRequest("GET", getGetObjectURL(endPoint, bucketName, "testObject"),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	client := &http.Client{}
-// 	response, err := client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	// asserting for the expected error response.
-// 	verifyError(t, response, "NoSuchBucket", "The specified bucket does not exist", http.StatusNotFound)
-// }
+	client := &http.Client{}
+	response, err := client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	// asserting for the expected error response.
+	verifyError(t, response, "NoSuchBucket", "The specified bucket does not exist", http.StatusNotFound)
+}
+*/
 
 func TestPutBucket(t *testing.T) {
 	// generate a random bucket name.
@@ -2412,86 +2416,91 @@ func TestSHA256Mismatch(t *testing.T) {
 	}
 }
 
-// AZURENA - long names allowed in azure.
-// func TestPutObjectLongName(t *testing.T) {
-// 	// generate a random bucket name.
-// 	bucketName := getRandomBucketName()
-// 	// HTTP request to create the bucket.
-// 	request, err := newTestSignedRequest("PUT", getMakeBucketURL(endPoint, bucketName),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+// TestNotBeAbleToCreateObjectInNonexistentBucket - Validates the error response
+// on an attempt to upload an object into a non-existent bucket.
+func TestPutObjectLongName(t *testing.T) {
+	// generate a random bucket name.
+	bucketName := getRandomBucketName()
+	// HTTP request to create the bucket.
+	request, err := newTestSignedRequest("PUT", getMakeBucketURL(endPoint, bucketName),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	client := &http.Client{}
-// 	// Execute the HTTP request to create bucket.
-// 	response, err := client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if response.StatusCode != http.StatusOK {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
-// 	}
-// 	// Content for the object to be uploaded.
-// 	buffer := bytes.NewReader([]byte("hello world"))
-// 	// make long object name.
-// 	longObjName := fmt.Sprintf("%0255d/%0255d/%0255d", 1, 1, 1)
-// 	// create new HTTP request to insert the object.
-// 	request, err = newTestSignedRequest("PUT", getPutObjectURL(endPoint, bucketName, longObjName),
-// 		int64(buffer.Len()), buffer, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	// execute the HTTP request.
-// 	response, err = client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if response.StatusCode != http.StatusOK {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
-// 	}
-// 	// make long object name.
-// 	longObjName = fmt.Sprintf("%0256d", 1)
-// 	buffer = bytes.NewReader([]byte("hello world"))
-// 	request, err = newTestSignedRequest("PUT", getPutObjectURL(endPoint, bucketName, longObjName),
-// 		int64(buffer.Len()), buffer, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	client := &http.Client{}
+	// Execute the HTTP request to create bucket.
+	response, err := client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
+	}
+	// Content for the object to be uploaded.
+	buffer := bytes.NewReader([]byte("hello world"))
+	// make long object name.
+	longObjName := fmt.Sprintf("%0255d/%0255d/%0255d", 1, 1, 1)
+	// create new HTTP request to insert the object.
+	request, err = newTestSignedRequest("PUT", getPutObjectURL(endPoint, bucketName, longObjName),
+		int64(buffer.Len()), buffer, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	// execute the HTTP request.
+	response, err = client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
+	}
+	/*
+		// AZURENA: object names of size 256 is supported with Azure backend.
+		// make long object name.
+		longObjName = fmt.Sprintf("%0256d", 1)
+		buffer = bytes.NewReader([]byte("hello world"))
+		request, err = newTestSignedRequest("PUT", getPutObjectURL(endPoint, bucketName, longObjName),
+			int64(buffer.Len()), buffer, accessKey, secretKey, signerV4)
+		if err != nil {
+			t.Fatalf("%v", err)
+		}
 
-// 	response, err = client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	verifyError(t, response, "XMinioInvalidObjectName", "Object name contains unsupported characters. Unsupported characters are `^*|\\\"", http.StatusBadRequest)
-// }
+		response, err = client.Do(request)
+		if err != nil {
+			t.Fatalf("%v", err)
+		}
+		verifyError(t, response, "XMinioInvalidObjectName", "Object name contains unsupported characters. Unsupported characters are `^*|\\\"", http.StatusBadRequest)
+	*/
+}
 
-// AZURENA - azure sdk does not allow us to differentiate between NuSuchBucket and NoSuchKey
-// // TestNotBeAbleToCreateObjectInNonexistentBucket - Validates the error response
-// // on an attempt to upload an object into a non-existent bucket.
-// func TestNotBeAbleToCreateObjectInNonexistentBucket(t *testing.T) {
-// 	// generate a random bucket name.
-// 	bucketName := getRandomBucketName()
-// 	// content of the object to be uploaded.
-// 	buffer1 := bytes.NewReader([]byte("hello world"))
+/* AZURENA: Cannot distuinguish between `NoSuchBucket` and `NoSuchKey`.
+// TestNotBeAbleToCreateObjectInNonexistentBucket - Validates the error response
+// on an attempt to upload an object into a non-existent bucket.
+func TestNotBeAbleToCreateObjectInNonexistentBucket(t *testing.T) {
+	// generate a random bucket name.
+	bucketName := getRandomBucketName()
+	// content of the object to be uploaded.
+	buffer1 := bytes.NewReader([]byte("hello world"))
 
-// 	// preparing for upload by generating the upload URL.
-// 	objectName := "test-object"
-// 	request, err := newTestSignedRequest("PUT", getPutObjectURL(endPoint, bucketName, objectName),
-// 		int64(buffer1.Len()), buffer1, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	// preparing for upload by generating the upload URL.
+	objectName := "test-object"
+	request, err := newTestSignedRequest("PUT", getPutObjectURL(endPoint, bucketName, objectName),
+		int64(buffer1.Len()), buffer1, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	client := &http.Client{}
-// 	// Execute the HTTP request.
-// 	response, err := client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	// Assert the response error message.
-// 	verifyError(t, response, "NoSuchBucket", "The specified bucket does not exist", http.StatusNotFound)
-// }
+	client := &http.Client{}
+	// Execute the HTTP request.
+	response, err := client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	// Assert the response error message.
+	verifyError(t, response, "NoSuchBucket", "The specified bucket does not exist", http.StatusNotFound)
+}
+*/
 
 // TestHeadOnObjectLastModified - Asserts response for HEAD on an object.
 // HEAD requests on an object validates the existence of the object.
@@ -3684,143 +3693,142 @@ func TestGetObjectRangeErrors(t *testing.T) {
 	verifyError(t, response, "InvalidRange", "The requested range is not satisfiable", http.StatusRequestedRangeNotSatisfiable)
 }
 
-// AZURENA - not supported
-// // TestObjectMultipartAbort - Test validates abortion of a multipart upload after uploading 2 parts.
-// func TestObjectMultipartAbort(t *testing.T) {
-// 	// generate a random bucket name.
-// 	bucketName := getRandomBucketName()
-// 	// HTTP request to create the bucket.
-// 	request, err := newTestSignedRequest("PUT", getMakeBucketURL(endPoint, bucketName),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+// TestObjectMultipartAbort - Test validates abortion of a multipart upload after uploading 2 parts.
+func TestObjectMultipartAbort(t *testing.T) {
+	// generate a random bucket name.
+	bucketName := getRandomBucketName()
+	// HTTP request to create the bucket.
+	request, err := newTestSignedRequest("PUT", getMakeBucketURL(endPoint, bucketName),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	client := &http.Client{}
-// 	// execute the HTTP request to create bucket.
-// 	response, err := client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if response.StatusCode != http.StatusOK {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
-// 	}
+	client := &http.Client{}
+	// execute the HTTP request to create bucket.
+	response, err := client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
+	}
 
-// 	objectName := "test-multipart-object"
+	objectName := "test-multipart-object"
 
-// 	// 1. Initiate 2 uploads for the same object
-// 	// 2. Upload 2 parts for the second upload
-// 	// 3. Abort the second upload.
-// 	// 4. Abort the first upload.
-// 	// This will test abort upload when there are more than one upload IDs
-// 	// and the case where there is only one upload ID.
+	// 1. Initiate 2 uploads for the same object
+	// 2. Upload 2 parts for the second upload
+	// 3. Abort the second upload.
+	// 4. Abort the first upload.
+	// This will test abort upload when there are more than one upload IDs
+	// and the case where there is only one upload ID.
 
-// 	// construct HTTP request to initiate a NewMultipart upload.
-// 	request, err = newTestSignedRequest("POST", getNewMultipartURL(endPoint, bucketName, objectName),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	// construct HTTP request to initiate a NewMultipart upload.
+	request, err = newTestSignedRequest("POST", getNewMultipartURL(endPoint, bucketName, objectName),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	// execute the HTTP request initiating the new multipart upload.
-// 	response, err = client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if response.StatusCode != http.StatusOK {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
-// 	}
+	// execute the HTTP request initiating the new multipart upload.
+	response, err = client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
+	}
 
-// 	// parse the response body and obtain the new upload ID.
-// 	decoder := xml.NewDecoder(response.Body)
-// 	newResponse := &InitiateMultipartUploadResponse{}
+	// parse the response body and obtain the new upload ID.
+	decoder := xml.NewDecoder(response.Body)
+	newResponse := &InitiateMultipartUploadResponse{}
 
-// 	err = decoder.Decode(newResponse)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if len(newResponse.UploadID) <= 0 {
-// 		t.Fatalf("Expected the length of the UploadID to be greater than 0.")
-// 	}
-// 	// construct HTTP request to initiate a NewMultipart upload.
-// 	request, err = newTestSignedRequest("POST", getNewMultipartURL(endPoint, bucketName, objectName),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
+	err = decoder.Decode(newResponse)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if len(newResponse.UploadID) <= 0 {
+		t.Fatalf("Expected the length of the UploadID to be greater than 0.")
+	}
+	// construct HTTP request to initiate a NewMultipart upload.
+	request, err = newTestSignedRequest("POST", getNewMultipartURL(endPoint, bucketName, objectName),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
 
-// 	// execute the HTTP request initiating the new multipart upload.
-// 	response, err = client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if response.StatusCode != http.StatusOK {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
-// 	}
+	// execute the HTTP request initiating the new multipart upload.
+	response, err = client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("Expected response status %d, got %d", http.StatusOK, response.StatusCode)
+	}
 
-// 	// parse the response body and obtain the new upload ID.
-// 	decoder = xml.NewDecoder(response.Body)
-// 	newResponse = &InitiateMultipartUploadResponse{}
+	// parse the response body and obtain the new upload ID.
+	decoder = xml.NewDecoder(response.Body)
+	newResponse = &InitiateMultipartUploadResponse{}
 
-// 	err = decoder.Decode(newResponse)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if len(newResponse.UploadID) <= 0 {
-// 		t.Fatalf("Expected the length of the UploadID to be greater than 0.")
-// 	}
-// 	// uploadID to be used for rest of the multipart operations on the object.
-// 	uploadID := newResponse.UploadID
+	err = decoder.Decode(newResponse)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if len(newResponse.UploadID) <= 0 {
+		t.Fatalf("Expected the length of the UploadID to be greater than 0.")
+	}
+	// uploadID to be used for rest of the multipart operations on the object.
+	uploadID := newResponse.UploadID
 
-// 	// content for the part to be uploaded.
-// 	buffer1 := bytes.NewReader([]byte("hello world"))
-// 	// HTTP request for the part to be uploaded.
-// 	request, err = newTestSignedRequest("PUT", getPartUploadURL(endPoint, bucketName, objectName, uploadID, "1"),
-// 		int64(buffer1.Len()), buffer1, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	// execute the HTTP request to upload the first part.
-// 	response1, err := client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if response1.StatusCode != http.StatusOK {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusOK, response1.StatusCode)
-// 	}
-// 	// content for the second part to be uploaded.
-// 	buffer2 := bytes.NewReader([]byte("hello world"))
-// 	// HTTP request for the second part to be uploaded.
-// 	request, err = newTestSignedRequest("PUT", getPartUploadURL(endPoint, bucketName, objectName, uploadID, "2"),
-// 		int64(buffer2.Len()), buffer2, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	// execute the HTTP request to upload the second part.
-// 	response2, err := client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	if response2.StatusCode != http.StatusOK {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusOK, response2.StatusCode)
-// 	}
-// 	// HTTP request for aborting the multipart upload.
-// 	request, err = newTestSignedRequest("DELETE", getAbortMultipartUploadURL(endPoint, bucketName, objectName, uploadID),
-// 		0, nil, accessKey, secretKey, signerV4)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	// execute the HTTP request to abort the multipart upload.
-// 	response3, err := client.Do(request)
-// 	if err != nil {
-// 		t.Fatalf("%v", err)
-// 	}
-// 	// expecting the response status code to be http.StatusNoContent.
-// 	// The assertion validates the success of Abort Multipart operation.
-// 	if response3.StatusCode != http.StatusNoContent {
-// 		t.Errorf("Expected response status %d, got %d", http.StatusNoContent, response3.StatusCode)
-// 	}
-// }
+	// content for the part to be uploaded.
+	buffer1 := bytes.NewReader([]byte("hello world"))
+	// HTTP request for the part to be uploaded.
+	request, err = newTestSignedRequest("PUT", getPartUploadURL(endPoint, bucketName, objectName, uploadID, "1"),
+		int64(buffer1.Len()), buffer1, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	// execute the HTTP request to upload the first part.
+	response1, err := client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if response1.StatusCode != http.StatusOK {
+		t.Errorf("Expected response status %d, got %d", http.StatusOK, response1.StatusCode)
+	}
+	// content for the second part to be uploaded.
+	buffer2 := bytes.NewReader([]byte("hello world"))
+	// HTTP request for the second part to be uploaded.
+	request, err = newTestSignedRequest("PUT", getPartUploadURL(endPoint, bucketName, objectName, uploadID, "2"),
+		int64(buffer2.Len()), buffer2, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	// execute the HTTP request to upload the second part.
+	response2, err := client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	if response2.StatusCode != http.StatusOK {
+		t.Errorf("Expected response status %d, got %d", http.StatusOK, response2.StatusCode)
+	}
+	// HTTP request for aborting the multipart upload.
+	request, err = newTestSignedRequest("DELETE", getAbortMultipartUploadURL(endPoint, bucketName, objectName, uploadID),
+		0, nil, accessKey, secretKey, signerV4)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	// execute the HTTP request to abort the multipart upload.
+	response3, err := client.Do(request)
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	// expecting the response status code to be http.StatusNoContent.
+	// The assertion validates the success of Abort Multipart operation.
+	if response3.StatusCode != http.StatusNoContent {
+		t.Errorf("Expected response status %d, got %d", http.StatusNoContent, response3.StatusCode)
+	}
+}
 
 // TestBucketMultipartList - Initiates a NewMultipart upload, uploads parts and validates listing of the parts.
 func TestBucketMultipartList(t *testing.T) {
