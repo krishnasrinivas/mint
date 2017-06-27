@@ -19,7 +19,6 @@ set -e
 
 _init() {
     minio_js_sdk_path=$1
-    minio_js_sdk_version=$2
 }
 
 # Install JS dependencies
@@ -30,8 +29,10 @@ installMinioJSDeps() {
 
 # Compile test files
 buildMinioJSTests() {
-    npm --prefix $minio_js_sdk_path install --save minio@$minio_js_sdk_version && \
-    npm --prefix $minio_js_sdk_path install
+    cd $minio_js_sdk_path
+    npm install
+    npm install -g mocha
+    node_modules/.bin/babel --presets es2015 test/functional-tests.js --out-file  test/functional-tests-es2015.js
 }
 
 jsMain() {

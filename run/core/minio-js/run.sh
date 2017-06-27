@@ -16,14 +16,14 @@
 #
 
 run() {
-	npm test
+    mocha test/functional-tests-es2015.js
 }
 
 main () {
     
     logfile=$1
     errfile=$2
-    
+
     # run the tests
     rc=0
     run 2>>$errfile 1>>$logfile || { echo "minio-js run failed.";rc=1;}
